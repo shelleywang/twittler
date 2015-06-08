@@ -9,9 +9,10 @@
     <style>
     body {
       text-align:center;
-      padding:10px;
+      margin:10px;
       font-family: 'Open Sans', sans-serif;
       font-size:90%;
+      background-color: #E6F2F6;
     }
     .tweet {
       padding:4px;
@@ -20,19 +21,45 @@
       font-size:60%;
       color:grey;
     }
+    a:link {
+        color: #007AA3;
+    }
+    a:visited {
+        color: #007AA3
+    }
+    h5 {
+      //text-align: left;
+    }
+    #tweets {
+      padding-top: 10px;
+      border-radius: 25px;
+      background-color: white;
+      position: relative;
+      width:64%;
+      left: 18%;
+      text-align: center;
+    }
+    .filterWarning {
+      padding:5px;
+      background-color: white;
+    }
     </style>
 
   </head>
   <body>
-    
+
+    <h5>Welcome! You are currently logged in as: sharksforcheap</h5>
     <h2>Twittler!</h2>
-    <h5>You are currently logged in as: sharksforcheap</h5>
+    
 
     <form id='tweetform'>
       <input id='tweetmessage' size='50'/>
       <button onclick='submitMessage()'> Submit tweet</button>
     </form>
     <br>
+
+    <div id='tweets'>
+    </div>
 
     <script>
       var visitor = 'sharksforcheap';
@@ -49,7 +76,7 @@
         Adds new tweets to the page
       */
       function addTweets() {
-          var $body = $('body');
+          var $body = $('#tweets');
 
           var tweetsAdded = 0;
 
@@ -90,6 +117,7 @@
 
         //$('.' +user).css('color','red');
         $('div').not('.'+user).hide(); //hides tweets from all other users
+        $('#tweets').show();
         currentFilter = user;
 
         var $warning = $('<div></div>');
@@ -98,9 +126,7 @@
         
         var $linkback = $('<div></div>');
         $linkback.html('<a class="back" href="#">Back to normal view</a>');
-        $linkback.addClass('filterWarning');
-
-        $linkback.prependTo($('body'));
+        $warning.append($linkback);
         $warning.prependTo($('body'));
         
         $('.back').on('click', unfilterTweets);
