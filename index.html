@@ -7,20 +7,81 @@
   <body>
     <script>
 
-      $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
+      var counter = 0;
+      var currentFilter = '';
+
+      $(document).ready(function() {
+        addTweets();
+
+        
+        
+      });
+
+      setInterval(addTweets,1000);
+      
+      
+
+      function addTweets() {
+          var $body = $('body');
+        //$body.html('');
+
+          var tweetsAdded = 0;
+          var index = streams.home.length - 1;
+        while(index >= counter){
           var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
+          
+            var $tweet = $('<div></div>');
+            //var dateformat = tweet.created_at.toDateString() + ' ' + (tweet.created_at.getHours() % 12)+ ' ' + tweet.created_at.getMinutes();
+            var timestamp = tweet.created_at.toString();
+            var dateformat = timestamp.substring(0,25);
+            $tweet.html('@' + '<a class="user" href="#">'+ tweet.user + '</a>'+ ': ' + tweet.message + ' ' + dateformat);
+            $tweet.appendTo($body);
+            $tweet.addClass(tweet.user);
+            if ((currentFilter === '') || (currentFilter === tweet.user)) {
+            
+          } else {
+            $tweet.hide();
+          }
           index -= 1;
+
+          tweetsAdded ++;
+        }
+        counter +=tweetsAdded;
+        $('.user').on('click', filterTweets);
+      }
+
+        function filterTweets() {
+
+          var user = $(this).text();
+
+          //$('.' +user).css('color','red');
+          $('div').not('.'+user).hide();
+          currentFilter = user;
+
+          var $warning = $('<div></div>');
+          $warning.html('<b>Currently filtering for user: ' + user + '</b>');
+          $warning.addClass('filterWarning');
+          
+          var $linkback = $('<div></div>');
+          $linkback.html('<a href="#">Back to normal view</a>');
+          $linkback.addClass('filterWarning');
+          $linkback.addClass('back');
+          $linkback.prependTo($('body'));
+
+          $warning.prependTo($('body'));
+          
+         $('.back').on('click', unfilterTweets);
         }
 
-      });
+        function unfilterTweets() {
+          
+          $('div').not('.'+currentFilter).show();
+          $('.filterWarning').hide();
+          currentFilter = '';
+        }
+      
+    
 
     </script>
   </body>
