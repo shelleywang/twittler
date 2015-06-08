@@ -3,84 +3,125 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    
+    <style>
+    body {
+      text-align:center;
+      padding:10px;
+      font-family: 'Open Sans', sans-serif;
+      font-size:90%;
+    }
+    .tweet {
+      padding:4px;
+    }
+    .timestamp {
+      font-size:60%;
+      color:grey;
+    }
+    </style>
+
   </head>
   <body>
+    
+    <h2>Twittler!</h2>
+    <h5>You are currently logged in as: sharksforcheap</h5>
+
+    <form id='tweetform'>
+      <input id='tweetmessage' size='50'/>
+      <button onclick='submitMessage()'> Submit tweet</button>
+    </form>
+    <br>
+
     <script>
-
-
+      var visitor = 'sharksforcheap';
       var counter = 0;
       var currentFilter = '';
 
       $(document).ready(function() {
         addTweets();
-
-        
-        
       });
 
-      setInterval(addTweets,1000);
+      setInterval(addTweets,1000); //adds new tweets every 1second
       
-      
-
+      /* addTweets() method: 
+        Adds new tweets to the page
+      */
       function addTweets() {
           var $body = $('body');
-        //$body.html('');
 
           var tweetsAdded = 0;
-          var index = streams.home.length - 1;
-        while(index >= counter){
-          var tweet = streams.home[index];
-          
-            var $tweet = $('<div></div>');
-            //var dateformat = tweet.created_at.toDateString() + ' ' + (tweet.created_at.getHours() % 12)+ ' ' + tweet.created_at.getMinutes();
-            var timestamp = tweet.created_at.toString();
-            var dateformat = timestamp.substring(0,25);
-            $tweet.html('@' + '<a class="user" href="#">'+ tweet.user + '</a>'+ ': ' + tweet.message + ' ' + dateformat);
-            $tweet.appendTo($body);
-            $tweet.addClass(tweet.user);
-            if ((currentFilter === '') || (currentFilter === tweet.user)) {
-            
-          } else {
-            $tweet.hide();
-          }
-          index -= 1;
 
-          tweetsAdded ++;
-        }
-        counter +=tweetsAdded;
-        $('.user').on('click', filterTweets);
+          var index = streams.home.length - 1;
+
+          while(index >= counter){
+            var tweet = streams.home[index];
+            var $tweet = $('<div></div>');
+            var timestamp = tweet.created_at.toString();
+            var dateformated = timestamp.substring(4,25);
+            $tweet.html('@' + '<a class="user" href="#">'+ tweet.user + '</a>'+ ': ' + tweet.message);
+            $tweet.addClass(tweet.user);
+            $tweet.addClass('tweet');
+            var $timestamp = $('<div></div>');
+            $timestamp.addClass('timestamp');
+            $timestamp.addClass(tweet.user);
+            $timestamp.text(dateformated);
+            $tweet.append($timestamp);
+            $tweet.appendTo($body);
+            
+            if ((currentFilter !== '') && (currentFilter !== tweet.user)) { 
+              // hides tweet if currently filtering by user 
+              $tweet.hide(); 
+            }
+
+            index -= 1;
+            tweetsAdded ++;
+          }
+          counter +=tweetsAdded;
+          $('.user').on('click', filterTweets);
       }
 
-        function filterTweets() {
+      /* filterTweets() method: 
+        Filters tweets by a specific user
+      */
+      function filterTweets() {
+        var user = $(this).text();
 
-          var user = $(this).text();
+        //$('.' +user).css('color','red');
+        $('div').not('.'+user).hide(); //hides tweets from all other users
+        currentFilter = user;
 
-          //$('.' +user).css('color','red');
-          $('div').not('.'+user).hide();
-          currentFilter = user;
+        var $warning = $('<div></div>');
+        $warning.html('<b>Currently filtering for user: ' + user + '</b>');
+        $warning.addClass('filterWarning');
+        
+        var $linkback = $('<div></div>');
+        $linkback.html('<a class="back" href="#">Back to normal view</a>');
+        $linkback.addClass('filterWarning');
 
-          var $warning = $('<div></div>');
-          $warning.html('<b>Currently filtering for user: ' + user + '</b>');
-          $warning.addClass('filterWarning');
-          
-          var $linkback = $('<div></div>');
-          $linkback.html('<a href="#">Back to normal view</a>');
-          $linkback.addClass('filterWarning');
-          $linkback.addClass('back');
-          $linkback.prependTo($('body'));
+        $linkback.prependTo($('body'));
+        $warning.prependTo($('body'));
+        
+        $('.back').on('click', unfilterTweets);
+      }
 
-          $warning.prependTo($('body'));
-          
-         $('.back').on('click', unfilterTweets);
-        }
-
-        function unfilterTweets() {
-          
-          $('div').not('.'+currentFilter).show();
-          $('.filterWarning').hide();
-          currentFilter = '';
-        }
-      
+      /* unfilterTweets() method: 
+        Removes the user filter from the displayed tweets
+      */
+      function unfilterTweets() {
+        $('div').not('.'+currentFilter).show();
+        $('.filterWarning').hide();
+        currentFilter = '';
+      }
+    
+      /* submitMessage() method:
+        Adds the user's new message to the tweets 
+      */
+      function submitMessage() {
+        writeTweet($('#tweetmessage').val());
+        $('#tweetmessage').val('');
+      }
     
 
     </script>
