@@ -39,6 +39,9 @@
       left: 18%;
       text-align: center;
     }
+    #formsubmit {
+      padding-bottom:10px;
+    }
     .filterWarning {
       padding:5px;
       background-color: white;
@@ -51,12 +54,10 @@
     <h5>Welcome! You are currently logged in as: sharksforcheap</h5>
     <h2>Twittler!</h2>
     
-
-    <form id='tweetform'>
-      <input id='tweetmessage' size='50'/>
+    <div id='formsubmit' >
+      <input id='tweetmessage' size='50' onkeydown="if (event.keyCode == 13) submitMessage()"/>
       <button onclick='submitMessage()'> Submit tweet</button>
-    </form>
-    <br>
+    </div>
 
     <div id='tweets'>
     </div>
@@ -95,7 +96,7 @@
             $timestamp.addClass(tweet.user);
             $timestamp.text(dateformated);
             $tweet.append($timestamp);
-            $tweet.appendTo($body);
+            $tweet.prependTo($body);
             
             if ((currentFilter !== '') && (currentFilter !== tweet.user)) { 
               // hides tweet if currently filtering by user 
@@ -147,6 +148,7 @@
       function submitMessage() {
         writeTweet($('#tweetmessage').val());
         $('#tweetmessage').val('');
+        return false;
       }
     
 
